@@ -15,8 +15,19 @@ public class ChatService {
 
     private final ChatClient chatClient;
 
-    public ChatService(ChatClient.Builder builder) {
-        this.chatClient = builder.build();
+    public ChatService(ChatClient chatClient) {
+
+//        this.chatClient=builder.build();
+
+        //This is another way of adding prompt properties by default on all prompts
+//        this.chatClient = builder.defaultOptions(GoogleGenAiChatOptions.builder()
+//                        .model("gemini-2.5-flash").temperature(0.2)
+//                        .maxOutputTokens(1000)
+//                        .build())
+//                .build();
+
+        //another way is to create bean so that it can be used in all services
+        this.chatClient=chatClient;
     }
 
     public Tut chat(String query){
@@ -53,9 +64,11 @@ public class ChatService {
     //this is for prompt properties
     public List<Tut> chatListPrompt(String prompt)
     {
-        Prompt prompt1=new Prompt(prompt, GoogleGenAiChatOptions.builder().
-                model("gemini-2.5-flash").temperature(0.2).maxOutputTokens(1000).build());
+        // this is one way
+//        Prompt prompt1=new Prompt(prompt, GoogleGenAiChatOptions.builder().
+//                model("gemini-2.5-flash").temperature(0.2).maxOutputTokens(1000).build());
 
+        Prompt prompt1=new Prompt(prompt);
         List<Tut> tutorials=chatClient.prompt(prompt1).call().entity(new ParameterizedTypeReference<List<Tut>>() {
         });
 
