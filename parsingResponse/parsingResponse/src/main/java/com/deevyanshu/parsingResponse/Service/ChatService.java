@@ -6,7 +6,9 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
@@ -17,6 +19,9 @@ import java.util.Map;
 public class ChatService {
 
     private final ChatClient chatClient;
+
+    @Value("classpath:/prompts/user-prompt.st")
+    private Resource userMessage;
 
     public ChatService(ChatClient chatClient) {
 
@@ -99,6 +104,21 @@ public class ChatService {
         var userPromptTemplate=PromptTemplate.builder().template("What is {techname}? tell me an example of {examplename}").build();
         var userMessage=userPromptTemplate.createMessage(Map.of(
                 "techname","spring","examplename","Spring boot"
+        ));
+
+        Prompt prompt=new Prompt(systemMessage,userMessage);
+        var content=chatClient.prompt(prompt).call().content();
+        return content;
+    }
+
+    public String chatTemplateFromFile()
+    {
+        var systemPromptTemplate=SystemPromptTemplate.builder().template("You are a helpful coding assistant.  You are an expert in coding")
+                .build();
+        var systemMessage=systemPromptTemplate.createMessage();
+        var userPromptTemplate=PromptTemplate.builder().resource(userMessage).build();
+        var userMessage=userPromptTemplate.createMessage(Map.of(
+                "concept","java abstraction"
         ));
 
         Prompt prompt=new Prompt(systemMessage,userMessage);

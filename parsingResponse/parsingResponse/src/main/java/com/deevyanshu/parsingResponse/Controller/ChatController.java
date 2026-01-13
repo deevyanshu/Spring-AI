@@ -37,4 +37,10 @@ public class ChatController {
     {
         return ResponseEntity.ok(chatService.chatTemplate());
     }
+
+    @GetMapping("/chattemplatefromfile")
+    public ResponseEntity<String> chatTemplateFromFile()
+    {
+        return ResponseEntity.ok(chatService.chatTemplateFromFile());
+    }
 }
