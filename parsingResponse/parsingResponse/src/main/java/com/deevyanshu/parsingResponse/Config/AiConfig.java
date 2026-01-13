@@ -13,7 +13,7 @@ public class AiConfig {
     {
         return builder.defaultOptions(GoogleGenAiChatOptions.builder()
                         .model("gemini-2.5-flash").temperature(0.2)
-                        .maxOutputTokens(1000)
+                        //.maxOutputTokens(1000)
                         .build())
                 .build();
     }

@@ -3,12 +3,15 @@ package com.deevyanshu.parsingResponse.Service;
 import com.deevyanshu.parsingResponse.Entity.Tut;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ChatService {
@@ -73,5 +76,33 @@ public class ChatService {
         });
 
         return tutorials;
+    }
+
+    //dynamic prompt templates
+    public String chatTemplate()
+    {
+//        // first step:- template creation
+//        PromptTemplate template=PromptTemplate.builder().template("What is {techname}? tell me an example of {examplename}").build();
+//
+//        //second step:- rendering
+//        String renderMessage=template.render(Map.of("techname","spring","examplename","Spring boot"));
+//
+//        Prompt prompt=new Prompt(renderMessage);
+//
+//        var content=chatClient.prompt(prompt).call().content();
+//        return content;
+
+        var systemPromptTemplate=SystemPromptTemplate.builder().template("You are a helpful coding assistant.  You are an expert in coding")
+                .build();
+        var systemMessage=systemPromptTemplate.createMessage();
+
+        var userPromptTemplate=PromptTemplate.builder().template("What is {techname}? tell me an example of {examplename}").build();
+        var userMessage=userPromptTemplate.createMessage(Map.of(
+                "techname","spring","examplename","Spring boot"
+        ));
+
+        Prompt prompt=new Prompt(systemMessage,userMessage);
+        var content=chatClient.prompt(prompt).call().content();
+        return content;
     }
 }
