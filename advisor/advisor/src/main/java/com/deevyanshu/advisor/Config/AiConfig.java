@@ -1,5 +1,6 @@
 package com.deevyanshu.advisor.Config;
 
+import com.deevyanshu.advisor.Advisos.TokenPrintAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
@@ -15,7 +16,8 @@ public class AiConfig {
         return builder.defaultOptions(GoogleGenAiChatOptions.builder()
                         .model("gemini-2.5-flash").temperature(0.2)
                         .maxOutputTokens(1000)
-                        .build()).defaultAdvisors(new SimpleLoggerAdvisor())
+                // SimpleLoggerAdvisor is prebuilt and tokenPrintadvisor is custom
+                        .build()).defaultAdvisors(new TokenPrintAdvisor()/*,new SimpleLoggerAdvisor()*/)
                 .build();
     }
 }
