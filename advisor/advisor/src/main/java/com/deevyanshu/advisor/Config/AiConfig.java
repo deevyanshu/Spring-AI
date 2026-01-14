@@ -15,7 +15,7 @@ public class AiConfig {
     {
         return builder.defaultOptions(GoogleGenAiChatOptions.builder()
                         .model("gemini-2.5-flash").temperature(0.2)
-                        .maxOutputTokens(1000)
+                        //.maxOutputTokens(1000)
                 // SimpleLoggerAdvisor is prebuilt and tokenPrintadvisor is custom
                         .build()).defaultAdvisors(new TokenPrintAdvisor()/*,new SimpleLoggerAdvisor()*/)
                 .build();
