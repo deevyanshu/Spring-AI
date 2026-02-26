@@ -18,6 +18,8 @@ public class TokenPrintAdvisor implements CallAdvisor, StreamAdvisor {
     public ChatClientResponse adviseCall(ChatClientRequest chatClientRequest, CallAdvisorChain callAdvisorChain) {
         logger.info("My token print advisor is called");
         logger.info("Request:-"+chatClientRequest.prompt().getContents());
+        // in callAdvisorChain, the nextCall send the chatClientRequest to next advisor and if the advisor
+        // is not available then it send it to the llm
         ChatClientResponse chatClientResponse=callAdvisorChain.nextCall(chatClientRequest);
         logger.info("Response received from the model:");
         logger.info("Response:-"+chatClientResponse.chatResponse().getResult().getOutput().getText());

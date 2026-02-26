@@ -3,9 +3,7 @@ package com.deevyanshu.advisor.Controller;
 import com.deevyanshu.advisor.Service.ChatService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RestController
@@ -18,9 +16,10 @@ public class ChatController {
         this.chatService = chatService;
     }
     @GetMapping("/chattemplate")
-    public ResponseEntity<String> chatTemplate()
+    public ResponseEntity<String> chatTemplate(@RequestParam(value = "q", required = true) String q,
+                                               @RequestHeader(value = "userId") String userId)
     {
-        return ResponseEntity.ok(chatService.chatTemplate());
+        return ResponseEntity.ok(chatService.chatTemplate(q,userId));
     }
 
     //it will stream the data
