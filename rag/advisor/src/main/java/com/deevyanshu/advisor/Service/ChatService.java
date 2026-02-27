@@ -1,12 +1,15 @@
 package com.deevyanshu.advisor.Service;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
+import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +65,18 @@ public class ChatService {
 //        return content;
 
         // with this approach we dont need to give system prompt
-        return chatClient.prompt().advisors(QuestionAnswerAdvisor.builder(vectorStore).build()).user(user->user.text("{context}").param("context",q)).call().content();
+       // return chatClient.prompt().advisors(QuestionAnswerAdvisor.builder(vectorStore).build()).user(user->user.text("{context}").param("context",q)).call().content();
+
+        //Advance rag flow
+        var retrievalAugmentationAdvisor = RetrievalAugmentationAdvisor.builder()
+                .documentRetriever(VectorStoreDocumentRetriever.builder()
+                        .similarityThreshold(0.50)
+                        .vectorStore(vectorStore)
+                        .build())
+                .build();
+
+        return chatClient.prompt().advisors(retrievalAugmentationAdvisor).user(user->user.text("{context}").param("context",q)).call().content();
+
     }
 
     public Flux<String> streamChat() {
