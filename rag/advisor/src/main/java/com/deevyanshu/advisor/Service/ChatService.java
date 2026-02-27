@@ -1,6 +1,7 @@
 package com.deevyanshu.advisor.Service;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -31,33 +32,37 @@ public class ChatService {
 
     public String chatTemplate(String q,String userId)
     {
-        //load data from vector database
-        SearchRequest searchRequest= SearchRequest.builder()
-                .topK(5)
-                .similarityThreshold(0.6)
-                .query(q)
-                .build();
+        // this is prompt approach
+//        //load data from vector database
+//        SearchRequest searchRequest= SearchRequest.builder()
+//                .topK(5)
+//                .similarityThreshold(0.6)
+//                .query(q)
+//                .build();
+//
+//        List<Document> documents=this.vectorStore.similaritySearch(searchRequest);
+//        List<String> documentList=documents.stream().map(item->item.getText()).toList();
+//        String context=String.join(",",documentList);
+//        //similar result user query
 
-        List<Document> documents=this.vectorStore.similaritySearch(searchRequest);
-        List<String> documentList=documents.stream().map(item->item.getText()).toList();
-        String context=String.join(",",documentList);
-        //similar result user query
+//        var systemPromptTemplate= SystemPromptTemplate.builder().
+//                template("You are a coding assistant. Explain concepts clearly with examples. Answer only from DOCUMENTS section. If something is not in DOCUMENTS, reply with I don't know. DOCUMENTS:{documents}")
+//                .build();
+//        var systemMessage=systemPromptTemplate.createMessage(Map.of(
+//                "documents",context
+//        ));
+//
+//        var userPromptTemplate= PromptTemplate.builder().template("{context}").build();
+//        var userMessage=userPromptTemplate.createMessage(Map.of(
+//                "context",q
+//        ));
+//
+//        Prompt prompt=new Prompt(systemMessage,userMessage);
+//        var content=chatClient.prompt(prompt).call().content();
+//        return content;
 
-        var systemPromptTemplate= SystemPromptTemplate.builder().
-                template("You are a coding assistant. Explain concepts clearly with examples. Answer only from DOCUMENTS section. If something is not in DOCUMENTS, reply with I don't know. DOCUMENTS:{documents}")
-                .build();
-        var systemMessage=systemPromptTemplate.createMessage(Map.of(
-                "documents",context
-        ));
-
-        var userPromptTemplate= PromptTemplate.builder().template("{context}").build();
-        var userMessage=userPromptTemplate.createMessage(Map.of(
-                "context",q
-        ));
-
-        Prompt prompt=new Prompt(systemMessage,userMessage);
-        var content=chatClient.prompt(prompt).call().content();
-        return content;
+        // with this approach we dont need to give system prompt
+        return chatClient.prompt().advisors(QuestionAnswerAdvisor.builder(vectorStore).build()).user(user->user.text("{context}").param("context",q)).call().content();
     }
 
     public Flux<String> streamChat() {
