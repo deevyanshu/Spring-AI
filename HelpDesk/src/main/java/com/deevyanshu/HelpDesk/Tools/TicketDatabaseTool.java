@@ -5,13 +5,19 @@ import com.deevyanshu.HelpDesk.Service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class TicketDatabaseTool {
 
+
     private final TicketService ticketService;
+
+    public TicketDatabaseTool(TicketService ticketService)
+    {
+        this.ticketService=ticketService;
+    }
 
     @Tool(description = "This tool helps to create new ticket in database")
     public Ticket createTicketTool(@ToolParam(description = "Ticket fields required to create new ticket") Ticket ticket)

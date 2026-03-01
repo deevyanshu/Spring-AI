@@ -7,14 +7,19 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
-@RequiredArgsConstructor
 @Getter
 @Setter
 public class TicketService {
 
     private final TicketRepository ticketRepository;
+
+    public TicketService(TicketRepository ticketRepository)
+    {
+        this.ticketRepository=ticketRepository;
+    }
 
     @Transactional
     public Ticket createTicket(Ticket ticket)
@@ -37,4 +42,6 @@ public class TicketService {
     {
         return this.ticketRepository.save(ticket);
     }
+
+
 }

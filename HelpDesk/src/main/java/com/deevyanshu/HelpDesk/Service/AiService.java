@@ -10,9 +10,10 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
-@RequiredArgsConstructor
 @Getter
 @Setter
 public class AiService {
@@ -20,6 +21,12 @@ public class AiService {
     private final ChatClient chatClient;
 
     private final TicketDatabaseTool ticketDatabaseTool;
+
+    public AiService(ChatClient chatClient,TicketDatabaseTool ticketDatabaseTool)
+    {
+        this.chatClient=chatClient;
+        this.ticketDatabaseTool=ticketDatabaseTool;
+    }
 
     @Value("classpath:/helpdesk_system.st")
     private Resource systemResource;
@@ -29,5 +36,13 @@ public class AiService {
         return this.chatClient.prompt().advisors(advisorspec->advisorspec
                 .param(ChatMemory.CONVERSATION_ID,conversationId))
                 .tools(ticketDatabaseTool).system(systemResource).user(query).call().content();
+    }
+
+    public Flux<String> streamResponseFromAssistant(String query, String conversationId)
+    {
+
+        return this.chatClient.prompt().advisors(advisorspec->advisorspec
+                        .param(ChatMemory.CONVERSATION_ID,conversationId))
+                .tools(ticketDatabaseTool).system(systemResource).user(query).stream().content();
     }
 }
