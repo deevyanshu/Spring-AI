@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: LinkedInPost
+  ai:
+    google:
+      genai:
+        api-key: ${GENAI_API_KEY}
+        chat:
+          options:
+            model: gemini-3-flash-preview
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}
+    username: ${TELEGRAM_BOT_NAME}
+
+linkedin:
+  access:
+    token: ${LINKEDIN_ACCESS_TOKEN}
